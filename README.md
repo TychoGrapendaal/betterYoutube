@@ -1,2 +1,2 @@
 # betterYoutube
-Youtube app die beter is
+A better youtube android app
