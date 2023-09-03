@@ -18,6 +18,8 @@ android {
 
     packaging {
         resources.excludes.add("META-INF/DEPENDENCIES")
+        resources.excludes.add("META-INF/io.netty.versions.properties")
+        resources.excludes.add("META-INF/INDEX.LIST")
     }
 
     buildTypes {
@@ -44,6 +46,13 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
+
+    implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
+//    implementation("io.github.bonigarcia:webdrivermanager:5.5.3")
+
+
+    implementation("org.seleniumhq.selenium:selenium-android-driver:2.39.0")
+    testImplementation("io.appium:java-client:8.5.1")
 
 
 //    implementation("com.google.android.gms:play-services-vision:20.1.3")

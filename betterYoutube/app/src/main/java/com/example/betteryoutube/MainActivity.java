@@ -1,66 +1,101 @@
 package com.example.betteryoutube;
 
-import androidx.annotation.NonNull;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.util.Log;
+
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.SearchView;
+import androidx.annotation.NonNull;
 
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    SearchView searchView;
-    ListView listView;
-
-    ArrayAdapter<String> adapter;
-
-
+    private WebView webView;
+    static YouTubePlayer youTubePlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        searchView = findViewById(R.id.searchView);
-        listView = findViewById(R.id.listView);
-
-
-
-        List<String> videoTitles = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, videoTitles);
-        listView.setAdapter(adapter);
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) { //when user clicks search button
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) { //when user types in search bar
-                adapter.getFilter().filter(newText);
-                //filter youtube videos and display them in listview
-
-                return false;
-            }
-        });
+        YouTubePlayerTracker tracker = new YouTubePlayerTracker();
 
         YouTubePlayerView youTubePlayerView = findViewById(R.id.youtube_player_view);
-        getLifecycle().addObserver(youTubePlayerView);
+        youTubePlayerView.enableBackgroundPlayback(true);
 
         youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
             @Override
             public void onReady(@NonNull YouTubePlayer youTubePlayer) {
-                String videoId = "0Klsx7dniuo";
-                youTubePlayer.loadVideo(videoId, 0);
+                MainActivity.youTubePlayer = youTubePlayer;
+                youTubePlayer.addListener(tracker);
+            }
+        });
+
+
+
+
+        webView = findViewById(R.id.webView);
+
+        // Enable JavaScript in the WebView
+        webView.getSettings().setJavaScriptEnabled(true);
+
+        // Load the YouTube search results page
+        webView.loadUrl("https://www.youtube.com");
+
+        // Set WebView clients to handle page loading and JavaScript events
+        webView.setWebViewClient(new WebViewClient()
+        {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+
+                Log.d("WebView", "your current url when webpage loading.." + url);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                Log.d("WebView", "your current url when webpage loading.. finish" + url);
+                super.onPageFinished(view, url);
+            }
+
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                // TODO Auto-generated method stub
+                super.onLoadResource(view, url);
+            }
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                System.out.println("when you click on any interlink on webview that time you got url :-" + url);
+                return super.shouldOverrideUrlLoading(view, url);
+            }
+        });
+
+        //when the url of the webview changes it prints the new url it to the terminal
+
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                System.out.println(webView.getUrl());
+                //get the index of watch?v= and add 11 to get video id
+                if (webView.getUrl().contains("watch?v=")) {
+                    int index = webView.getUrl().indexOf("watch?v=");
+                    String videoId = webView.getUrl().substring(index+8, index + 19);
+                    System.out.println(videoId);
+                    //check the current vidoe id that the youtubeplayer is playing
+                    //if it is not the same as the new video id then load the new video
+                    if (tracker.getVideoId() != null &&
+                            tracker.getVideoId().equals(videoId)) return;
+                    youTubePlayer.loadVideo(videoId, 0);
+                }
             }
         });
     }

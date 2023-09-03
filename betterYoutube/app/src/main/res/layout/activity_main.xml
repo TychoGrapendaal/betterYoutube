@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,23 +14,15 @@
         tools:layout_editor_absoluteX="-76dp"
         tools:layout_editor_absoluteY="143dp">
 
-        <SearchView
-            android:id="@+id/searchView"
+        <WebView
+            android:id="@+id/webView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <ListView
-            android:id="@+id/listView"
-            android:layout_width="match_parent"
-            android:layout_height="448dp" />
+            android:layout_height="500dp" />
 
         <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
             android:id="@+id/youtube_player_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            app:autoPlay="true"
-            app:videoId="0Klsx7dniuo" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
